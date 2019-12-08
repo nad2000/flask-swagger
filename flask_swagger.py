@@ -122,7 +122,7 @@ def _extract_definitions(alist, level=None):
 
 
 def swagger(app, prefix=None, process_doc=_sanitize,
-            from_file_keyword=None, template=None):
+            from_file_keyword=None, template=None, ignore_verbs=None):
     """
     Call this from an @app.route method like this
     @app.route('/spec.json')
@@ -140,6 +140,8 @@ def swagger(app, prefix=None, process_doc=_sanitize,
     process_doc -- text sanitization method, the default simply replaces \n with <br>
     from_file_keyword -- how to specify a file to load doc from
     template -- The spec to start with and update as flask-swagger finds paths.
+    ignore_verbs -- The HTTP methods, that should be ignored (default: {"HEAD", "OPTIONS"})
+
     """
     output = {
         "swagger": "2.0",
@@ -160,7 +162,8 @@ def swagger(app, prefix=None, process_doc=_sanitize,
     output["paths"] = paths
     output["definitions"] = definitions
 
-    ignore_verbs = {"HEAD", "OPTIONS"}
+    if ignore_verbs is None:
+        ignore_verbs = {"HEAD", "OPTIONS"}
     # technically only responses is non-optional
     optional_fields = ['tags', 'consumes', 'produces', 'schemes', 'security',
                        'deprecated', 'operationId', 'externalDocs']
